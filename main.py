@@ -1,36 +1,31 @@
-import asyncio
 from telethon import TelegramClient
+from telethon.tl.functions.messages import AddReactionRequest
+import asyncio
 
-# إعدادات الجلسة
-api_id = 234950140766
+# قيمك الحقيقية مدمجة
+api_id = 21623709
 api_hash = '10413d2349501407662294ae7662a04c'
-session_file = 'session/milaz.session'
-
-# الرسائل المطلوبة
-messages = [
-    '/like 9621632878',
-    '/like 6964225068',
-    '/like 10519956884'
-]
-
-# الكروبات المطلوبة
-groups = [
-    'https://t.me/vIpMeNAx',
-    'https://t.me/BNGXXXXX',
-    'https://t.me/blrxcommunity',
-    'https://t.me/ActionFF_bin'
-]
-
-async def send_to_group(client, group):
-    for msg in messages:
-        await client.send_message(group, msg)
-        print(f'Sent "{msg}" to {group}')
-        await asyncio.sleep(180)  # 3 دقائق بين كل رسالة داخل نفس الكروب
+phone = '+963985648307'
 
 async def main():
-    async with TelegramClient(session_file, api_id, api_hash) as client:
-        for group in groups:
-            await send_to_group(client, group)
+    client = TelegramClient('milaz', api_id, api_hash)
+    await client.start(phone=phone)
+    print("Logged in successfully! 🚀")
+    
+    # غير 'durov' لقناة حقيقية إذا عايز (مثل اسم قناتك بدون @)
+    channel = 'durov'  # تجربة مع قناة بافل دوروف
+    likes_count = 0
+    async for message in client.iter_messages(channel, limit=3):  # 3 منشورات للتجربة السريعة
+        try:
+            await client(AddReactionRequest(peer=channel, msg_id=message.id, reaction=[{'_': 'ReactionEmoji', 'emoticon': '👍'}]))
+            likes_count += 1
+            print(f"Liked message ID: {message.id}")
+            await asyncio.sleep(1)  # تأخير صغير عشان ما يفشلش
+        except Exception as e:
+            print(f"Error on message {message.id if 'message' in locals() else 'unknown'}: {e}")
+    
+    print(f"Total likes completed: {likes_count} ✅")
+    await client.disconnect()
 
 if __name__ == '__main__':
     asyncio.run(main())

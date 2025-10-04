@@ -1,8 +1,8 @@
 from telethon import TelegramClient
-from telethon.tl.functions.messages import AddReactionRequest
 import asyncio
+import time  # للتأخير
 
-# قيمك الحقيقية مدمجة
+# قيمك الحقيقية
 api_id = 21623709
 api_hash = '10413d2349501407662294ae7662a04c'
 phone = '+963985648307'
@@ -12,19 +12,31 @@ async def main():
     await client.start(phone=phone)
     print("Logged in successfully! 🚀")
     
-    # غير 'durov' لقناة حقيقية إذا عايز (مثل اسم قناتك بدون @)
-    channel = 'durov'  # تجربة مع قناة بافل دوروف
-    likes_count = 0
-    async for message in client.iter_messages(channel, limit=3):  # 3 منشورات للتجربة السريعة
-        try:
-            await client(AddReactionRequest(peer=channel, msg_id=message.id, reaction=[{'_': 'ReactionEmoji', 'emoticon': '👍'}]))
-            likes_count += 1
-            print(f"Liked message ID: {message.id}")
-            await asyncio.sleep(1)  # تأخير صغير عشان ما يفشلش
-        except Exception as e:
-            print(f"Error on message {message.id if 'message' in locals() else 'unknown'}: {e}")
+    # الـ3 جروبات (أسماء بدون t.me/، غيرها لو لازم)
+    groups = ['vIpMeNAx', 'BNGXXXXX', 'blrxcommunity']
     
-    print(f"Total likes completed: {likes_count} ✅")
+    # الـ3 رسائل المحددة
+    messages = [
+        '/like 9621632878',
+        '/like 6964225068',
+        '/like 10519956884'
+    ]
+    
+    total_sent = 0
+    for group in groups:
+        print(f"Starting to send to group: {group}")
+        for msg in messages:
+            try:
+                await client.send_message(group, msg)
+                total_sent += 1
+                print(f"Sent '{msg}' to {group} ✅")
+                await asyncio.sleep(60)  # تأخير دقيقة (60 ثانية) بين الرسائل داخل الجروب
+            except Exception as e:
+                print(f"Error sending '{msg}' to {group}: {e}")
+        
+        print(f"Finished group {group}. Moving to next...")  # بعد كل جروب، انتقل للتاني بدون تأخير إضافي (لو تبي تأخير بين الجروبات، أضف time.sleep(60) هون)
+    
+    print(f"Total messages sent: {total_sent} out of 9 ✅ – Will repeat in 24 hours!")
     await client.disconnect()
 
 if __name__ == '__main__':
